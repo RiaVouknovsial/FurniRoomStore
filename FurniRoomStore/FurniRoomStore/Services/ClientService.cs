@@ -36,5 +36,29 @@ namespace FurniRoomStore.Services
         {
             await _clientRepository.DeleteAsync(id);
         }
+
+        // Поиск клиентов по полному имени
+        public async Task<IEnumerable<Client>> GetClientsByFullNameAsync(string fullName)
+        {
+            return await _clientRepository.GetClientsByFullNameAsync(fullName);
+        }
+
+        // Поиск клиентов по дате регистрации
+        public async Task<IEnumerable<Client>> GetClientsByRegistrationDateAsync(DateTime registrationDate)
+        {
+            return await _clientRepository.GetClientsByRegistrationDateAsync(registrationDate);
+        }
+
+        // Поиск клиентов по стране
+        public async Task<IEnumerable<Client>> GetClientsByCountryAsync(string country)
+        {
+            return await _clientRepository.GetClientsByCountryAsync(country);
+        }
+
+        // Поиск клиентов по городу
+        public async Task<IEnumerable<Client>> GetClientsByCityAsync(string city)
+        {
+            return await _clientRepository.GetClientsByCityAsync(city);
+        }
     }
 }

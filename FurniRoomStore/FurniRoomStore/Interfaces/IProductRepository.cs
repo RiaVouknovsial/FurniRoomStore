@@ -1,6 +1,5 @@
 ﻿using FurniRoomStore.Models;
 using FurniRoomStore.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace FurniRoomStore.Interfaces
 {
