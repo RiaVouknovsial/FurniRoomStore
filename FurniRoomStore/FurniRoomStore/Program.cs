@@ -8,6 +8,11 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Настройка логирования
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();  // Добавление логирования в консоль
+builder.Logging.AddDebug();    // Логирование в отладчик
+
 // Add services to the container.
 
 builder.Services.AddControllers();
