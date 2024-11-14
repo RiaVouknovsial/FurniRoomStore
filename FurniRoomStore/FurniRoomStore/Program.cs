@@ -1,7 +1,5 @@
 using FurniRoomStore;
 using FurniRoomStore.Interfaces;
-using FurniRoomStore.Models;
-using FurniRoomStore.Repositories;
 using FurniRoomStore.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -23,6 +21,9 @@ builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
+
+
+
 //Регистрация сервисов
 builder.Services.AddScoped<ClientService>();
 builder.Services.AddScoped<ProductService>();
@@ -37,9 +38,11 @@ builder.Services.AddSwaggerGen(c =>
 });
 builder.Services.AddControllers();
 //builder.Services.AddDbContext<FurniRoomStoreContext>(options =>
- //   options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
- //   new MySqlServerVersion(new Version(8, 0, 25))));
+//   options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+//   new MySqlServerVersion(new Version(8, 0, 25))));
 
+builder.Services.AddDbContext<FurniRoomStoreContext>(static options =>
+    options.UseInMemoryDatabase("InMemoryDb"));
 
 
 
