@@ -35,11 +35,18 @@ namespace FurniRoomStore.Controllers
 
         // Добавление нового продукта
         [HttpPost]
-        public async Task<ActionResult> AddProduct([FromBody] Product product, [FromForm] byte[] imageData)
+        public async Task<ActionResult> AddProduct([FromBody] Product product, [FromForm] IFormFile imageFile)
         {
+            byte[] imageData;
+            using (var ms = new MemoryStream())
+            {
+                await imageFile.CopyToAsync(ms);
+                imageData = ms.ToArray();
+            }
             await _productService.AddProductAsync(product, imageData);
             return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
         }
+
 
         // Обновление существующего продукта
         [HttpPut("{id}")]

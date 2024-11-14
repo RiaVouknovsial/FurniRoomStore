@@ -3,7 +3,7 @@ using FurniRoomStore.Models;
 
 namespace FurniRoomStore.Services
 {
-    public class OrderService
+    public class OrderService 
     {
         private readonly IOrderRepository _orderRepository;
 
