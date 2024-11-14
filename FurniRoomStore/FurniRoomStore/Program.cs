@@ -23,7 +23,7 @@ builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
-//Регистрация ервисов
+//Регистрация сервисов
 builder.Services.AddScoped<ClientService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<OrderService>();
@@ -36,9 +36,12 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "FurniRoomStore API", Version = "v1" });
 });
 builder.Services.AddControllers();
-builder.Services.AddDbContext<FurniRoomStoreContext>(options =>
-    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
-    new MySqlServerVersion(new Version(8, 0, 25))));
+//builder.Services.AddDbContext<FurniRoomStoreContext>(options =>
+ //   options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+ //   new MySqlServerVersion(new Version(8, 0, 25))));
+
+
+
 
 var app = builder.Build();
 
