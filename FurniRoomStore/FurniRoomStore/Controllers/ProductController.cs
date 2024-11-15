@@ -1,11 +1,6 @@
 ﻿using FurniRoomStore.Models;
 using FurniRoomStore.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace FurniRoomStore.Controllers
 {
@@ -63,7 +58,7 @@ namespace FurniRoomStore.Controllers
 
         // Добавление нового продукта
         [HttpPost]
-        public async Task<ActionResult> AddProduct([FromBody] Product product, [FromForm] IFormFile imageFile)
+        async Task<ActionResult> AddProduct([FromBody] Product product, [FromForm] IFormFile imageFile)
         {
             try
             {

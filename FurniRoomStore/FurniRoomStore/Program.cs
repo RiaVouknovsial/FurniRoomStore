@@ -3,6 +3,8 @@ using FurniRoomStore.Interfaces;
 using FurniRoomStore.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,8 +24,6 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
 
-
-
 //Регистрация сервисов
 builder.Services.AddScoped<ClientService>();
 builder.Services.AddScoped<ProductService>();
@@ -35,14 +35,20 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "FurniRoomStore API", Version = "v1" });
+    c.MapType<IFormFile>(() => new OpenApiSchema
+    {
+        Type = "file",
+        Format = "binary"
+    });
 });
-builder.Services.AddControllers();
-//builder.Services.AddDbContext<FurniRoomStoreContext>(options =>
-//   options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
-//   new MySqlServerVersion(new Version(8, 0, 25))));
 
-builder.Services.AddDbContext<FurniRoomStoreContext>(static options =>
-    options.UseInMemoryDatabase("InMemoryDb"));
+builder.Services.AddControllers();
+builder.Services.AddDbContext<FurniRoomStoreContext>(options =>
+   options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+   new MySqlServerVersion(new Version(8, 0, 25))));
+
+//builder.Services.AddDbContext<FurniRoomStoreContext>(static options =>
+//    options.UseInMemoryDatabase("InMemoryDb"));
 
 
 
