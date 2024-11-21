@@ -46,7 +46,7 @@ namespace FurniRoomStore
                 entity.Property(p => p.ManufacturingTechnology).HasMaxLength(100); // Технология изготовления
                 entity.Property(p => p.Construction).HasMaxLength(100); // Конструктив
                 entity.Property(p => p.Material).HasMaxLength(100); // Основной материал
-                entity.Property(p => p.PhotoPath).HasMaxLength(500); // Путь к фото продукта
+                
             });
         }
     }

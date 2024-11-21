@@ -3,30 +3,39 @@ using FurniRoomStore.Repositories;
 
 namespace FurniRoomStore.Interfaces
 {
-    public interface IProductRepository : IRepository<Product>
+    public interface IProductRepository
     {
-        Task<byte[]> GetImageAsync(int productId);
-        Task UpdateImageAsync(int productId, byte[] imageData);
+        Task<IEnumerable<Product>> GetAllAsync();
+        Task<Product?> GetByIdAsync(int id);
+        Task AddAsync(Product product);
+        Task UpdateAsync(Product product);
+        Task DeleteAsync(int id);
     }
 
     public class ProductRepository : Repository<Product>, IProductRepository
     {
         public ProductRepository(FurniRoomStoreContext context) : base(context) { }
 
-        public async Task<byte[]> GetImageAsync(int productId)
+        public async Task<Product> GetProductByIdAsync(int productId)
         {
-            var product = await _dbSet.FindAsync(productId);
-            return product?.ImageData;
+            return await _dbSet.FindAsync(productId);
         }
 
-        public async Task UpdateImageAsync(int productId, byte[] imageData)
+        public async Task UpdateProductAsync(Product product)
         {
-            var product = await _dbSet.FindAsync(productId);
-            if (product != null)
+            var existingProduct = await _dbSet.FindAsync(product.Id);
+            if (existingProduct != null)
             {
-                product.ImageData = imageData;
+                // Обновляем свойства продукта
+                existingProduct.Name = product.Name;
+                existingProduct.Price = product.Price;
+                existingProduct.Description = product.Description;
+                existingProduct.StockQuantity = product.StockQuantity;
+                existingProduct.Category = product.Category;
                 await _context.SaveChangesAsync();
             }
         }
     }
+
+
 }

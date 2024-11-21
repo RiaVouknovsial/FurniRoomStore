@@ -1,11 +1,12 @@
 ﻿using FurniRoomStore.Models;
 using FurniRoomStore.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace FurniRoomStore.Controllers
 {
+    [Route("api/products")]
     [ApiController]
-    [Route("api/[controller]")]
     public class ProductController : ControllerBase
     {
         private readonly ProductService _productService;
@@ -17,120 +18,105 @@ namespace FurniRoomStore.Controllers
             _logger = logger;
         }
 
-        // Получение всех продуктов
+        // Получить все продукты
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()
+        public async Task<IActionResult> GetAllProducts()
         {
             try
             {
+                _logger.LogInformation("Запрос на получение всех продуктов.");
                 var products = await _productService.GetAllProductsAsync();
-                _logger.LogInformation("Получены все продукты.");
+                _logger.LogInformation($"Возвращено {products.Count()} продуктов.");
                 return Ok(products);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Ошибка при получении всех продуктов.");
-                return StatusCode(500, "Ошибка сервера при получении всех продуктов.");
+                return StatusCode(500, new { message = "Произошла ошибка при получении всех продуктов." });
             }
         }
 
-        // Получение продукта по ID
+        // Получить продукт по ID
         [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProductById(int id)
+        public async Task<IActionResult> GetProductById(int id)
         {
             try
             {
+                _logger.LogInformation($"Запрос на получение продукта с ID {id}.");
                 var product = await _productService.GetProductByIdAsync(id);
                 if (product == null)
                 {
                     _logger.LogWarning($"Продукт с ID {id} не найден.");
-                    return NotFound();
+                    return NotFound(new { message = "Продукт не найден" });
                 }
-                _logger.LogInformation($"Получен продукт с ID {id}.");
+
+                _logger.LogInformation($"Продукт с ID {id} успешно найден.");
                 return Ok(product);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Ошибка при получении продукта с ID {id}.");
-                return StatusCode(500, "Ошибка сервера при получении продукта.");
+                return StatusCode(500, new { message = $"Произошла ошибка при получении продукта с ID {id}." });
             }
         }
 
-        // Добавление нового продукта
+        // Добавить новый продукт
         [HttpPost]
-        async Task<ActionResult> AddProduct([FromBody] Product product, [FromForm] IFormFile imageFile)
+        public async Task<IActionResult> AddProduct([FromBody] Product product)
         {
             try
             {
-                byte[] imageData;
-                using (var ms = new MemoryStream())
-                {
-                    await imageFile.CopyToAsync(ms);
-                    imageData = ms.ToArray();
-                }
-
-                await _productService.AddProductAsync(product, imageData);
+                _logger.LogInformation("Запрос на добавление нового продукта.");
+                await _productService.AddProductAsync(product);
                 _logger.LogInformation($"Продукт с ID {product.Id} успешно добавлен.");
                 return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при добавлении нового продукта.");
-                return StatusCode(500, "Ошибка сервера при добавлении нового продукта.");
+                _logger.LogError(ex, "Ошибка при добавлении продукта.");
+                return StatusCode(500, new { message = "Произошла ошибка при добавлении продукта." });
             }
         }
 
-        // Обновление существующего продукта
+        // Обновить продукт
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateProduct(int id, [FromBody] Product product)
+        public async Task<IActionResult> UpdateProduct(int id, [FromBody] Product product)
         {
+            if (id != product.Id)
+            {
+                _logger.LogWarning($"ID продукта {id} не совпадает с ID в теле запроса.");
+                return BadRequest(new { message = "ID продукта не совпадает с ID в запросе" });
+            }
+
             try
             {
-                if (id != product.Id)
-                {
-                    _logger.LogWarning($"Несоответствие ID продукта: ожидаемый ID {id}, фактический ID {product.Id}.");
-                    return BadRequest("Product ID mismatch");
-                }
-
-                var existingProduct = await _productService.GetProductByIdAsync(id);
-                if (existingProduct == null)
-                {
-                    _logger.LogWarning($"Продукт с ID {id} не найден для обновления.");
-                    return NotFound();
-                }
-
+                _logger.LogInformation($"Запрос на обновление продукта с ID {id}.");
                 await _productService.UpdateProductAsync(product);
                 _logger.LogInformation($"Продукт с ID {id} успешно обновлен.");
-                return NoContent();
+                return NoContent(); // Статус 204 (No Content) при успешном обновлении
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Ошибка при обновлении продукта с ID {id}.");
-                return StatusCode(500, "Ошибка сервера при обновлении продукта.");
+                return StatusCode(500, new { message = $"Произошла ошибка при обновлении продукта с ID {id}." });
             }
         }
 
-        // Удаление продукта
+        // Удалить продукт
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteProduct(int id)
+        public async Task<IActionResult> DeleteProduct(int id)
         {
             try
             {
-                var product = await _productService.GetProductByIdAsync(id);
-                if (product == null)
-                {
-                    _logger.LogWarning($"Продукт с ID {id} не найден для удаления.");
-                    return NotFound();
-                }
-
+                _logger.LogInformation($"Запрос на удаление продукта с ID {id}.");
                 await _productService.DeleteProductAsync(id);
                 _logger.LogInformation($"Продукт с ID {id} успешно удален.");
-                return NoContent();
+                return NoContent(); // Статус 204 (No Content) при успешном удалении
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Ошибка при удалении продукта с ID {id}.");
-                return StatusCode(500, "Ошибка сервера при удалении продукта.");
+                return StatusCode(500, new { message = $"Произошла ошибка при удалении продукта с ID {id}." });
             }
         }
     }
